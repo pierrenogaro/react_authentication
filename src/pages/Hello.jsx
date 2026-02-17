@@ -1,17 +1,42 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Hello = () => {
     const navigate = useNavigate();
-    const userEmail = localStorage.getItem('userEmail');
+    const [message, setMessage] = useState('');
     const token = localStorage.getItem('authToken');
 
     useEffect(() => {
         if (!token) {
             navigate('/login');
-        } else {
-            console.log('Token:', token);
+            return;
         }
+
+        console.log('Token:', token);
+
+        const fetchHello = async () => {
+            try {
+                const response = await axios.get('https://backend.imatrythis.com/api/hello', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                setMessage(response.data.message);
+
+            } catch (error) {
+                console.error('Erreur :', error);
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userEmail');
+                    navigate('/login');
+                }
+            }
+        };
+
+        fetchHello();
+
     }, [token, navigate]);
 
     const handleLogout = () => {
@@ -26,7 +51,7 @@ const Hello = () => {
 
     return (
         <div>
-            <h1>Bienvenue {userEmail}</h1>
+            <h1>{message || 'Chargement...'}</h1>
             <button
                 onClick={handleLogout}
                 style={{
