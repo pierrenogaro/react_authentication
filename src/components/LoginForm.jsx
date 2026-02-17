@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const LoginForm = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        email: '',
+        username: '',
         password: ''
     });
 
@@ -20,11 +20,12 @@ const LoginForm = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('/api/login_check', formData);
+            const response = await axios.post('https://backend.imatrythis.com/api/login_check', formData);
 
             //token
             if (response.data.token) {
                 localStorage.setItem('authToken', response.data.token);
+                localStorage.setItem('userEmail', formData.username);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
 
                 navigate('/hello');
@@ -41,9 +42,9 @@ const LoginForm = () => {
 
             <input
                 type="text"
-                name="email"
+                name="username"
                 placeholder="Email"
-                value={formData.email}
+                value={formData.username}
                 onChange={handleChange}
                 required
             />

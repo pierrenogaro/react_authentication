@@ -20,7 +20,7 @@ const RegisterForm = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('/api/register', formData);
+            const response = await axios.post('https://backend.imatrythis.com/registration', formData);
 
             if (response.data.success) {
                 alert('Inscription réussie !');
